@@ -1,0 +1,14 @@
+# Python
+**/.venv/
+**/__pycache__/
+
+# VS Code
+.vscode/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Uploads temporaires
+backend/uploads/*
+!backend/uploads/.gitkeep

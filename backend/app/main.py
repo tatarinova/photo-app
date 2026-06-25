@@ -2,16 +2,30 @@ from fastapi import FastAPI, File, UploadFile
 
 from fastapi.staticfiles import StaticFiles
 
+from fastapi.middleware.cors import CORSMiddleware
+
 from pathlib import Path
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 UPLOAD_DIR = Path("uploads") #### WORKDIR/uploads/ (WORKDIR est defini dans Dockerfile)
 
 UPLOAD_DIR.mkdir(exist_ok=True)
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+
 
 @app.get("/")
 def root():

@@ -43,3 +43,14 @@ def list_photos():
     return {
         "photos": photos
     }
+
+### ou 
+# @app.get("/photos")
+# def list_photos():
+#     return {
+#         "photos": [
+#             file.name
+#             for file in UPLOAD_DIR.iterdir()
+#             if file.is_file()
+#         ]
+#     }

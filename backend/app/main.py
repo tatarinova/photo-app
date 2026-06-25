@@ -54,3 +54,19 @@ def list_photos():
 #             if file.is_file()
 #         ]
 #     }
+
+@app.delete("/photos/{filename}")
+def delete_photo(filename: str):
+    file_path = UPLOAD_DIR / filename
+
+    if not file_path.exists():
+        return {
+            "message": "file not found"
+        }
+
+    file_path.unlink()  ### delete file
+
+    return {
+        "filename": filename,
+        "message": "deleted"
+    }

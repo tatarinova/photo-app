@@ -6,3 +6,9 @@ services:
 
     volumes:
       - ./backend/uploads:/app/uploads
+
+  frontend:
+    build: ./frontend
+
+    ports:
+      - "8080:80"

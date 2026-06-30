@@ -1,8 +1,10 @@
 services:
   backend:
     build: ./backend
-    ports:
-      - "8000:8000"
+    #ports:
+    #  - "8000:8000"
+    expose:
+      - "8000"
 
     volumes:
       - ./backend/uploads:/app/uploads
@@ -10,5 +12,10 @@ services:
   frontend:
     build: ./frontend
 
+    #ports:
+    #  - "8080:80"
     ports:
-      - "8080:80"
+      - "80:80"
+
+    depends_on:
+      - backend

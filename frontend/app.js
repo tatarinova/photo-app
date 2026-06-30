@@ -10,16 +10,16 @@ async function loadPhotos() {
 
     gallery.innerHTML = "";
 
-    data.photos.forEach(filename => {
+    data.photos.forEach(photo => {
 
         const card = document.createElement("div");
 
         card.className = "photo-card";
 
         card.innerHTML = `
-            <img src="${API_URL}/uploads/${filename}" alt="${filename}">
-            <p>${filename}</p>
-            <button onclick="deletePhoto('${filename}')">
+            <img src="${photo.url}" alt="${photo.filename}">
+            <p>${photo.filename}</p>
+            <button onclick="deletePhoto('${photo.filename}')">
                 Delete
             </button>
         `;

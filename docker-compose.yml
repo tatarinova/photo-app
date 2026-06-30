@@ -6,8 +6,8 @@ services:
     expose:
       - "8000"
 
-    volumes:
-      - ./backend/uploads:/app/uploads
+    environment:
+      BUCKET_NAME: mafalda-photo-app-2026
 
   frontend:
     build: ./frontend

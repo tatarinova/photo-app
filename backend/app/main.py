@@ -1,31 +1,11 @@
 from fastapi import FastAPI, File, UploadFile
 
-from fastapi.staticfiles import StaticFiles
-
 from fastapi.middleware.cors import CORSMiddleware
 
-from pathlib import Path
+from app.s3 import s3, BUCKET_NAME
 
 
 app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-UPLOAD_DIR = Path("uploads") #### WORKDIR/uploads/ (WORKDIR est defini dans Dockerfile)
-
-UPLOAD_DIR.mkdir(exist_ok=True)
-
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
-
-
 
 @app.get("/")
 def root():
@@ -38,11 +18,12 @@ def health():
 #### upload photos
 @app.post("/photos")
 async def upload_photo(file: UploadFile = File(...)):
-    file_path = UPLOAD_DIR / file.filename
-
-    with open(file_path, "wb") as buffer:
-        content = await file.read()
-        buffer.write(content)
+    
+    s3.upload_fileobj(
+                        file.file,
+                        BUCKET_NAME,
+                        file.filename,
+                    )
 
     return {
         "filename": file.filename,
@@ -52,15 +33,30 @@ async def upload_photo(file: UploadFile = File(...)):
 ##### list photos
 @app.get("/photos")
 def list_photos():
+
     photos = []
 
-    for file in UPLOAD_DIR.iterdir():
-        if file.is_file():
-            photos.append(file.name)
+    response = s3.list_objects_v2(Bucket=BUCKET_NAME)
 
-    return {
-        "photos": photos
-    }
+    for obj in response.get("Contents", []):
+
+        url = s3.generate_presigned_url(
+                                        "get_object",
+                                        Params={
+                                            "Bucket": BUCKET_NAME,
+                                            "Key": obj["Key"],
+                                        },
+                                        ExpiresIn=3600,
+                                        )
+
+        photos.append(
+                        {
+                            "filename": obj["Key"],
+                            "url": url,
+                        }
+                    )
+
+    return { "photos": photos }
 
 ### ou 
 # @app.get("/photos")
@@ -75,14 +71,11 @@ def list_photos():
 
 @app.delete("/photos/{filename}")
 def delete_photo(filename: str):
-    file_path = UPLOAD_DIR / filename
-
-    if not file_path.exists():
-        return {
-            "message": "file not found"
-        }
-
-    file_path.unlink()  ### delete file
+    
+    s3.delete_object(
+        Bucket=BUCKET_NAME,
+        Key=filename,
+    )
 
     return {
         "filename": filename,

@@ -7,9 +7,9 @@ services:
       - "8000"
 
     environment:
-      BUCKET_NAME: mafalda-
-      
-    restart: unless-stopped
+      BUCKET_NAME: mafalda-photo-app-2026
+
+    restart: unless-stopped  
 
   frontend:
     build: ./frontend

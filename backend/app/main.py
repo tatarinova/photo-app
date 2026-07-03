@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.s3 import s3, BUCKET_NAME
 
+import socket
 
 app = FastAPI()
 
@@ -14,6 +15,10 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+@app.get("/server")
+def server():
+    return {"hostname": socket.gethostname()}
 
 #### upload photos
 @app.post("/photos")

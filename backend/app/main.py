@@ -6,7 +6,8 @@ from app.s3 import s3, BUCKET_NAME
 
 import socket
 
-app = FastAPI()
+app = FastAPI(docs_url="/api/docs",
+                openapi_url="/api/openapi.json",)
 
 @app.get("/")
 def root():

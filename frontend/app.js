@@ -2,7 +2,7 @@ const API_URL = "";
 
 
 async function loadPhotos() {
-    const response = await fetch(`${API_URL}/photos`);
+    const response = await fetch(`${API_URL}/api/photos`);
 
     const data = await response.json();
 
@@ -41,7 +41,7 @@ async function uploadPhoto() {
 
     formData.append("file", input.files[0]);
 
-    await fetch(`${API_URL}/photos`, {
+    await fetch(`${API_URL}/api/photos`, {
         method: "POST",
         body: formData
     });
@@ -52,7 +52,7 @@ async function uploadPhoto() {
 
 async function deletePhoto(filename) {
 
-    await fetch(`${API_URL}/photos/${filename}`, {
+    await fetch(`${API_URL}/api/photos/${filename}`, {
         method: "DELETE"
     });
 

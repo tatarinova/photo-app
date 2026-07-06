@@ -8,6 +8,7 @@ import socket
 
 app = FastAPI(root_path="/api")
 
+
 @app.get("/")
 def root():
     return {"message": "Photo Gallery API"}

@@ -1,5 +1,8 @@
 name: Deploy
 
+env:
+  ECR_REGISTRY: 448406924969.dkr.ecr.eu-west-3.amazonaws.com
+
 on:
   push:
     branches:
@@ -27,6 +30,27 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push backend
+        run: |
+            docker build -t photo-app-backend ./backend
+
+            docker tag photo-app-backend:latest \
+              $ECR_REGISTRY/photo-app-backend:latest
+
+            docker push $ECR_REGISTRY/photo-app-backend:latest
+
+      - name: Build and push frontend
+        run: |
+            docker build -t photo-app-frontend ./frontend
+
+            docker tag photo-app-frontend:latest \
+              $ECR_REGISTRY/photo-app-frontend:latest
+
+            docker push $ECR_REGISTRY/photo-app-frontend:latest
+
       - name: Deploy via SSM
         run: |
           aws ssm send-command \
@@ -34,6 +58,6 @@ jobs:
             --document-name "AWS-RunShellScript" \
             --parameters commands='[
               "cd /home/ubuntu/photo-app",
-              "git pull",
-              "docker compose up --build -d"
+              "docker compose pull",
+              "docker compose up -d"
             ]'

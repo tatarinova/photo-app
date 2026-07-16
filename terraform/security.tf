@@ -3,7 +3,7 @@
 
 resource "aws_security_group" "alb" {
 
-  name        = "photo-app-alb-sg-tf"
+  name        = "${local.prefix}-alb-sg"
 
   description = "Security Group for ALB"
 
@@ -54,7 +54,7 @@ resource "aws_vpc_security_group_egress_rule" "alb_out" {
 
 resource "aws_security_group" "ec2" {
 
-  name        = "photo-app-ec2-sg-tf"
+  name        = "${local.prefix}-ec2-sg"
 
   description = "Security Group for EC2 instances"
 
@@ -86,7 +86,7 @@ resource "aws_vpc_security_group_ingress_rule" "ec2_ssh" {
 
   to_port = 22
 
-  cidr_ipv4 = "91.170.134.202/32"   # <--- my public IP (box)
+  cidr_ipv4 = var.my_ip
 }
 
 resource "aws_vpc_security_group_egress_rule" "ec2_out" {

@@ -1,6 +1,6 @@
 resource "aws_iam_role" "ec2_role" {
 
-  name = "photo-app-ec2-role-tf"
+  name = "${local.prefix}-ec2-role"
 
   assume_role_policy = jsonencode({
 
@@ -41,7 +41,7 @@ resource "aws_iam_role_policy_attachment" "s3_access" {
 
 resource "aws_iam_instance_profile" "ec2_profile" {
 
-  name = "photo-app-ec2-profile-tf"
+  name = "${local.prefix}-instance-profile"
 
   role = aws_iam_role.ec2_role.name
 

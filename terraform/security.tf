@@ -3,7 +3,7 @@
 
 resource "aws_security_group" "alb" {
 
-  name        = "${local.prefix}-alb-sg"
+  name        = "${local.resource_name}-alb-sg"
 
   description = "Security Group for ALB"
 
@@ -54,7 +54,7 @@ resource "aws_vpc_security_group_egress_rule" "alb_out" {
 
 resource "aws_security_group" "ec2" {
 
-  name        = "${local.prefix}-ec2-sg"
+  name        = "${local.resource_name}-ec2-sg"
 
   description = "Security Group for EC2 instances"
 

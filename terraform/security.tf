@@ -9,6 +9,8 @@ resource "aws_security_group" "alb" {
 
   vpc_id      = data.aws_vpc.default.id
 
+  tags = local.common_tags
+
 }
 
 resource "aws_vpc_security_group_ingress_rule" "alb_http" {
@@ -59,6 +61,8 @@ resource "aws_security_group" "ec2" {
   description = "Security Group for EC2 instances"
 
   vpc_id      = data.aws_vpc.default.id
+
+  tags = local.common_tags
 }
 
 

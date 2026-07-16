@@ -26,6 +26,8 @@ resource "aws_iam_role" "ec2_role" {
 
   })
 
+  tags = local.common_tags
+
 }
 
 #### permissions to access S3
@@ -44,6 +46,8 @@ resource "aws_iam_instance_profile" "ec2_profile" {
   name = "${local.resource_name}-instance-profile"
 
   role = aws_iam_role.ec2_role.name
+
+  tags = local.common_tags
 
 }
 

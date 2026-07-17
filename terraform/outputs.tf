@@ -30,3 +30,11 @@ output "frontend_repository_url" {
 output "backend_repository_url" {
   value = aws_ecr_repository.backend.repository_url
 }
+
+output "ami_ubuntu_noble_24_04" {
+  value = data.aws_ami.ubuntu.id
+}
+
+output "aws_subnets_default" {
+  value = data.aws_subnets.default.ids
+}

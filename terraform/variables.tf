@@ -18,3 +18,8 @@ variable "my_ip" {
   description = "Public IP allowed to SSH (CIDR)"
   type        = string
 }
+
+variable "instance_type" {
+  type    = string
+  default = "t3.micro"
+}

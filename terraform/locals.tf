@@ -12,4 +12,24 @@ locals {
     ManagedBy   = "Terraform"
   }
 
+  ec2_instances = {
+    ec2-1 = {
+      subnet_index = 0
+    }
+
+    ec2-2 = {
+      subnet_index = 1
+    }
+
+    
+    # ec2-3 = {
+    #   subnet_index = 2
+    # }
+
+
+  }
+
+
 }
+
+

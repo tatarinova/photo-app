@@ -25,17 +25,19 @@ data "aws_key_pair" "existing" {
 }
 
 #### EC2 
-resource "aws_instance" "ec2_1" {
+resource "aws_instance" "ec2" {
+
+  for_each = local.ec2_instances
 
   ami = data.aws_ami.ubuntu.id
 
   instance_type = var.instance_type
 
-  subnet_id = data.aws_subnets.default.ids[0]
+  subnet_id = data.aws_subnets.default.ids[each.value.subnet_index]
 
   vpc_security_group_ids = [
-                aws_security_group.ec2.id
-                ]
+    aws_security_group.ec2.id
+  ]
 
   iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
 
@@ -45,44 +47,12 @@ resource "aws_instance" "ec2_1" {
 
   associate_public_ip_address = true
 
-  monitoring = true  ### active metrics for CloudWatch
+  monitoring = true
 
   tags = merge(
     local.common_tags,
     {
-      Name = "${local.resource_name}-ec2-1"
-    }
-  )
-
-}
-
-
-resource "aws_instance" "ec2_2" {
-
-  ami = data.aws_ami.ubuntu.id
-
-  instance_type = var.instance_type
-
-  subnet_id = data.aws_subnets.default.ids[1]
-
-  vpc_security_group_ids = [
-                aws_security_group.ec2.id
-                ]
-
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
-
-  key_name = data.aws_key_pair.existing.key_name
-
-  user_data = file("${path.module}/user-data.sh")
-
-  associate_public_ip_address = true
-
-  monitoring = true  ### active metrics for CloudWatch
-
-  tags = merge(
-    local.common_tags,
-    {
-      Name = "${local.resource_name}-ec2-2"
+      Name = "${local.resource_name}-${each.key}"
     }
   )
 

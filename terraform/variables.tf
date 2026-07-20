@@ -23,3 +23,7 @@ variable "instance_type" {
   type    = string
   default = "t3.micro"
 }
+
+variable "domain_name" {
+  type = string
+}

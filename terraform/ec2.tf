@@ -43,7 +43,7 @@ resource "aws_instance" "ec2" {
 
   key_name = data.aws_key_pair.existing.key_name
 
-  user_data = templatefile("${path.module}/user-data.sh.tpl",
+  user_data = templatefile("${path.module}/../templates/user-data.sh.tpl",
                                 {
                                   aws_region          = var.aws_region
                                   config_bucket       = aws_s3_bucket.config.bucket

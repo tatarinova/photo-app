@@ -84,7 +84,8 @@ aws ecr get-login-password \
 docker login \
 --username AWS \
 --password-stdin \
-${frontend_repository%/*}
+# $${frontend_repository%/*} 
+${frontend_repository}
 
 ###################################
 # Run app

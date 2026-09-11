@@ -12,23 +12,20 @@ on:
     branches:
       - master
 
+
+# JOB # 1 : Build --> push images in ECR
+# JOB # 2 : Deploy for each EC2 (matrix) 
+
 jobs:
-
-  deploy:
-
+# JOB 1 : Build & Push (Exécuté UNE seule fois)
+  build-and-push:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        instance:
-          - i-0d3c3e993e3c6919c
-          - i-0ad746528ab986bbd
-
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-      - uses: actions/checkout@v5
-
-      - uses: aws-actions/configure-aws-credentials@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -39,30 +36,46 @@ jobs:
 
       - name: Build and push backend
         run: |
-            docker build -t $BACKEND_IMAGE ./backend
-
-            docker tag $BACKEND_IMAGE:latest \
-              $ECR_REGISTRY/$BACKEND_IMAGE:latest
-
-            docker push $ECR_REGISTRY/$BACKEND_IMAGE:latest
+          docker build -t $BACKEND_IMAGE ./backend
+          docker tag $BACKEND_IMAGE:latest $ECR_REGISTRY/$BACKEND_IMAGE:latest
+          docker push $ECR_REGISTRY/$BACKEND_IMAGE:latest
 
       - name: Build and push frontend
         run: |
-            docker build -t $FRONTEND_IMAGE ./frontend
+          docker build -t $FRONTEND_IMAGE ./frontend
+          docker tag $FRONTEND_IMAGE:latest $ECR_REGISTRY/$FRONTEND_IMAGE:latest
+          docker push $ECR_REGISTRY/$FRONTEND_IMAGE:latest
 
-            docker tag $FRONTEND_IMAGE:latest \
-              $ECR_REGISTRY/$FRONTEND_IMAGE:latest
+  # JOB 2 : Deploiement sur chaque instance EC2 via la Matrice
+  deploy:
+    needs: build-and-push # Attend que le job 1 soit terminé
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        instance:
+          - i-0d3c3e993e3c6919c
+          - i-0ad746528ab986bbd
 
-            docker push $ECR_REGISTRY/$FRONTEND_IMAGE:latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Deploy via SSM
         run: |
           aws ssm send-command \
-            --instance-ids ${{ matrix.instance }} \
+            --instance-ids "${{ matrix.instance }}" \
             --document-name "AWS-RunShellScript" \
-            --parameters commands='[
+            --comment "Deploying photo-app" \
+            --parameters 'commands=[
+              "aws ecr get-login-password --region '$AWS_REGION' | docker login --username AWS --password-stdin '$ECR_REGISTRY'",
               "cd /opt/photo-app",
               "docker compose pull",
-              "docker compose up -d --remove-orphans", 
-              "docker image prune -af"
+              "docker compose up -d --remove-orphans",
+              "docker image prune -af",
+              "docker system df"
             ]'
+

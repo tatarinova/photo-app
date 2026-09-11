@@ -59,7 +59,7 @@ resource "local_file" "docker_compose" {
   filename = "${path.module}/generated/docker-compose.yml"
 
   # template
-  content = templatefile("${path.module}/../templates/docker-compose.yml.tpl", {
+  content = templatefile("${path.module}/templates/docker-compose.yml.tpl", {
     backend_repository  = aws_ecr_repository.backend.repository_url
     frontend_repository = aws_ecr_repository.frontend.repository_url
     photos_bucket       = aws_s3_bucket.photos.bucket

@@ -57,7 +57,7 @@ jobs:
             --instance-ids ${{ matrix.instance }} \
             --document-name "AWS-RunShellScript" \
             --parameters commands='[
-              "cd /home/ubuntu/photo-app",
+              "cd /opt/photo-app",
               "docker compose pull",
               "docker compose up -d --remove-orphans", 
               "docker image prune -f"

@@ -14,12 +14,6 @@ terraform {
       version = "~> 6.0"
     }
 
-    # to create local files (resource "local_file" ...) - for ex., generated files from templates
-    local = {
-      source = "hashicorp/local"
-      version = "~> 2.5"
-    }
-
   }
   
 }

@@ -1,0 +1,22 @@
+services:
+  backend:
+    image: 448406924969.dkr.ecr.eu-west-3.amazonaws.com/photo-app-backend:latest
+
+    expose:
+      - "8000"
+
+    environment:
+      BUCKET_NAME: mafalda-photo-app-2026
+
+    restart: unless-stopped  
+
+  frontend:
+    image: 448406924969.dkr.ecr.eu-west-3.amazonaws.com/photo-app-frontend:latest
+
+    ports:
+      - "80:80"
+
+    depends_on:
+      - backend
+
+    restart: unless-stopped

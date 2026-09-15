@@ -4,8 +4,8 @@ env:
   AWS_REGION: eu-west-3
   ECR_REGISTRY: 448406924969.dkr.ecr.eu-west-3.amazonaws.com
 
-  BACKEND_IMAGE: photo-app-backend
-  FRONTEND_IMAGE: photo-app-frontend
+  BACKEND_IMAGE: photo-app-dev-tf-backend
+  FRONTEND_IMAGE: photo-app-dev-tf-frontend
 
 on:
   push:
@@ -53,8 +53,8 @@ jobs:
     strategy:
       matrix:
         instance:
-          - i-0d3c3e993e3c6919c
-          - i-0ad746528ab986bbd
+          - i-0ab397aa41799a88a
+          - i-0a08e3d91253c577d
 
     steps:
       - name: Configure AWS credentials

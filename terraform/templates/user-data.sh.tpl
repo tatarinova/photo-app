@@ -78,14 +78,12 @@ sleep 10  ### wait 10 s before docker login
 ####################################
 # Login ECR 
 #################################### 
-aws ecr get-login-password \
---region ${aws_region} \
+REGISTRY_URL=$(echo "${frontend_repository}" | cut -d'/' -f1)
+
+aws ecr get-login-password --region ${aws_region} \
 |
-docker login \
---username AWS \
---password-stdin \
-# $${frontend_repository%/*} 
-${frontend_repository}
+docker login --username AWS --password-stdin $REGISTRY_URL
+
 
 ###################################
 # Run app

@@ -44,14 +44,14 @@ resource "aws_instance" "ec2" {
   key_name = data.aws_key_pair.existing.key_name
 
   user_data = templatefile("${path.module}/templates/user-data.sh.tpl",
-                                {
-                                  aws_region          = var.aws_region
-                                  config_bucket       = aws_s3_bucket.config.bucket
+    {
+      aws_region    = var.aws_region
+      config_bucket = aws_s3_bucket.config.bucket
 
-                                  frontend_repository = aws_ecr_repository.frontend.repository_url
-                                  backend_repository  = aws_ecr_repository.backend.repository_url
-                                }
-                              )
+      frontend_repository = aws_ecr_repository.frontend.repository_url
+      backend_repository  = aws_ecr_repository.backend.repository_url
+    }
+  )
 
   associate_public_ip_address = true
 

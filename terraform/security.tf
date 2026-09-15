@@ -3,11 +3,11 @@
 
 resource "aws_security_group" "alb" {
 
-  name        = "${local.resource_name}-alb-sg"
+  name = "${local.resource_name}-alb-sg"
 
   description = "Security Group for ALB"
 
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id = data.aws_vpc.default.id
 
   tags = local.common_tags
 
@@ -56,11 +56,11 @@ resource "aws_vpc_security_group_egress_rule" "alb_out" {
 
 resource "aws_security_group" "ec2" {
 
-  name        = "${local.resource_name}-ec2-sg"
+  name = "${local.resource_name}-ec2-sg"
 
   description = "Security Group for EC2 instances"
 
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id = data.aws_vpc.default.id
 
   tags = local.common_tags
 }

@@ -1,8 +1,8 @@
 data "aws_acm_certificate" "photo_app" {
 
-  domain      = var.domain_name
+  domain = var.domain_name
 
-  statuses    = ["ISSUED"]
+  statuses = ["ISSUED"]
 
   most_recent = true
 

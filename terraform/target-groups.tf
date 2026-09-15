@@ -2,7 +2,7 @@ resource "aws_lb_target_group" "photo_app" {
 
   name = "${local.resource_name}-tg"
 
-  port = 80
+  port     = 80
   protocol = "HTTP"
 
   target_type = "instance"

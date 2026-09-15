@@ -5,7 +5,7 @@
 terraform {
   required_version = ">= 1.10"
 
-  
+
   required_providers {
 
     # to create all AWS resources (resource "aws_..." ...)
@@ -15,5 +15,5 @@ terraform {
     }
 
   }
-  
+
 }

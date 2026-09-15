@@ -1,6 +1,6 @@
 locals {
 
-  prefix = "${var.project_name}-${var.environment}" 
+  prefix = "${var.project_name}-${var.environment}"
 
   resource_name = "${local.prefix}-tf"
 
@@ -21,14 +21,7 @@ locals {
       subnet_index = 1
     }
 
-    
-    # ec2-3 = {
-    #   subnet_index = 2
-    # }
-
-
   }
-
 
 }
 

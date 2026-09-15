@@ -42,3 +42,8 @@ docker compose down
 
 docker compose up --build
 
+## Conncter a EC2 : 
+
+cd C:\Users\natal\Documents\RABOTA\AWS
+
+ssh -i "photo-app-key.pem" ubuntu@<public DNS>

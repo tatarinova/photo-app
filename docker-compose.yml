@@ -1,17 +1,17 @@
 services:
   backend:
-    image: 448406924969.dkr.ecr.eu-west-3.amazonaws.com/photo-app-backend:latest
+    image: 448406924969.dkr.ecr.eu-west-3.amazonaws.com/photo-app-dev-tf-backend
 
     expose:
       - "8000"
 
     environment:
-      BUCKET_NAME: mafalda-photo-app-2026
+      BUCKET_NAME: photo-app-dev-tf-mafalda-photos
 
     restart: unless-stopped  
 
   frontend:
-    image: 448406924969.dkr.ecr.eu-west-3.amazonaws.com/photo-app-frontend:latest
+    image: 448406924969.dkr.ecr.eu-west-3.amazonaws.com/photo-app-dev-tf-frontend
 
     ports:
       - "80:80"

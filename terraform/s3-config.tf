@@ -50,18 +50,18 @@ resource "aws_s3_bucket_versioning" "config" {
 }
 
 
-####################################################
-# .env
-####################################################
+# ####################################################
+# # .env
+# ####################################################
 
-resource "aws_s3_object" "env" {
+# resource "aws_s3_object" "env" {
 
-  bucket = aws_s3_bucket.config.id
+#   bucket = aws_s3_bucket.config.id
 
-  key = ".env"
+#   key = ".env"
 
-  source = "${path.module}/../.env"
+#   source = "${path.module}/../.env"
 
-  etag = filemd5("${path.module}/../.env")
+#   etag = filemd5("${path.module}/../.env")
 
-}
+# }

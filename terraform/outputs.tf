@@ -1,25 +1,21 @@
 output "vpc_id" {
-
   value = data.aws_vpc.default.id
-
 }
 
 output "subnet_ids" {
-
   value = data.aws_subnets.default.ids
-
 }
 
 output "bucket_name" {
-
   value = aws_s3_bucket.photos.bucket
-
 }
 
 output "bucket_arn" {
-
   value = aws_s3_bucket.photos.arn
+}
 
+output "config_bucket_name" {
+  value = aws_s3_bucket.config.bucket
 }
 
 
@@ -61,19 +57,13 @@ output "ec2_private_ips" {
 }
 
 output "alb_dns_name" {
-
   value = aws_lb.photo_app.dns_name
-
 }
 
 output "alb_arn" {
-
   value = aws_lb.photo_app.arn
-
 }
 
 output "alb_url" {
-
   value = "https://${aws_lb.photo_app.dns_name}"
-
 }

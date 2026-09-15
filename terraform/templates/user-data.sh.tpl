@@ -61,12 +61,12 @@ aws s3 cp \
 s3://${config_bucket}/docker-compose.yml \
 /opt/photo-app/docker-compose.yml
 
-####################################
-# Download .env (pour plus tard)
-#################################### 
-aws s3 cp \
-s3://${config_bucket}/.env \
-/opt/photo-app/.env || true
+# ####################################
+# # Download .env (pour plus tard)
+# #################################### 
+# aws s3 cp \
+# s3://${config_bucket}/.env \
+# /opt/photo-app/.env || true
 
 ####################################
 # Restart Docker

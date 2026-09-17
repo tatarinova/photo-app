@@ -12,5 +12,3 @@ Desktop.ini
 # Uploads temporaires
 backend/uploads/*
 !backend/uploads/.gitkeep
-
-terraform/*tfplan

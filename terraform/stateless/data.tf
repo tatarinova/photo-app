@@ -13,3 +13,10 @@ data "aws_subnets" "default" {
   }
 
 }
+
+data "terraform_remote_state" "stateful" {
+  backend = "local" 
+  config = {
+    path = "../stateful/terraform.tfstate"
+  }
+}

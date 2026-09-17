@@ -46,10 +46,10 @@ resource "aws_instance" "ec2" {
   user_data = templatefile("${path.module}/templates/user-data.sh.tpl",
     {
       aws_region    = var.aws_region
-      config_bucket = aws_s3_bucket.config.bucket
+      config_bucket = data.terraform_remote_state.stateful.outputs.config_bucket_name
 
-      frontend_repository = aws_ecr_repository.frontend.repository_url
-      backend_repository  = aws_ecr_repository.backend.repository_url
+      frontend_repository = data.terraform_remote_state.stateful.outputs.frontend_repository_url
+      backend_repository  = data.terraform_remote_state.stateful.outputs.backend_repository_url
     }
   )
 

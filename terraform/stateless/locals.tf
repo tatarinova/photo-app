@@ -12,16 +12,7 @@ locals {
     ManagedBy   = "Terraform"
   }
 
-  ec2_instances = {
-    ec2-1 = {
-      subnet_index = 0
-    }
-
-    ec2-2 = {
-      subnet_index = 1
-    }
-
-  }
+  sorted_subnet_ids = sort(data.aws_subnets.default.ids)
 
 }
 

@@ -37,18 +37,3 @@ resource "aws_lb_target_group" "photo_app" {
   )
 
 }
-
-
-#### atach the EC2 instances
-
-resource "aws_lb_target_group_attachment" "ec2" {
-
-  for_each = aws_instance.ec2
-
-  target_group_arn = aws_lb_target_group.photo_app.arn
-
-  target_id = each.value.id
-
-  port = 80
-
-}

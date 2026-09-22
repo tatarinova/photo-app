@@ -50,11 +50,6 @@ jobs:
   deploy:
     needs: build-and-push # Attend que le job 1 soit terminé
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        instance:
-          - i-024bb762c147bf58b
-          - i-0dffc047d1fa63496
 
     steps:
       - name: Configure AWS credentials
@@ -67,7 +62,7 @@ jobs:
       - name: Deploy via SSM
         run: |
           aws ssm send-command \
-            --instance-ids "${{ matrix.instance }}" \
+            --targets "Key=tag:Project,Values=photo-app" "Key=tag:Environment,Values=dev" \
             --document-name "AWS-RunShellScript" \
             --comment "Deploying photo-app" \
             --parameters 'commands=[

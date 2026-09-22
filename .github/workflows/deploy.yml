@@ -53,8 +53,8 @@ jobs:
     strategy:
       matrix:
         instance:
-          - i-0b0e69341c0cd71ab
-          - i-0315bf6facbf3dfd7
+          - i-024bb762c147bf58b
+          - i-0dffc047d1fa63496
 
     steps:
       - name: Configure AWS credentials

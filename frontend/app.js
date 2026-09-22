@@ -17,11 +17,7 @@ async function loadPhotos() {
         card.className = "photo-card";
 
         card.innerHTML = `
-            <img src="${photo.url}" alt="${photo.filename}">
-            <p>${photo.filename}</p>
-            <button onclick="deletePhoto('${photo.filename}')">
-                Delete
-            </button>
+            <img src="${photo.url}" alt="photo">
         `;
 
         gallery.appendChild(card);
@@ -49,15 +45,6 @@ async function uploadPhoto() {
     loadPhotos();
 }
 
-
-async function deletePhoto(filename) {
-
-    await fetch(`${API_URL}/api/photos/${filename}`, {
-        method: "DELETE"
-    });
-
-    loadPhotos();
-}
 
 
 loadPhotos();

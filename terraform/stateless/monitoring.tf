@@ -66,7 +66,7 @@ resource "aws_cloudwatch_metric_alarm" "asg_in_service_low" {
   }
 
   alarm_actions = [aws_sns_topic.alerts.arn]
-  ok_actions     = [aws_sns_topic.alerts.arn]
+  ok_actions    = [aws_sns_topic.alerts.arn]
 }
 
 ##################################################
@@ -88,11 +88,11 @@ resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
 
   dimensions = {
     LoadBalancer = aws_lb.photo_app.arn_suffix
-    TargetGroup   = aws_lb_target_group.photo_app.arn_suffix
+    TargetGroup  = aws_lb_target_group.photo_app.arn_suffix
   }
 
   alarm_actions = [aws_sns_topic.alerts.arn]
-  ok_actions     = [aws_sns_topic.alerts.arn]
+  ok_actions    = [aws_sns_topic.alerts.arn]
 }
 
 ##################################################
@@ -114,9 +114,9 @@ resource "aws_cloudwatch_metric_alarm" "alb_target_5xx" {
 
   dimensions = {
     LoadBalancer = aws_lb.photo_app.arn_suffix
-    TargetGroup   = aws_lb_target_group.photo_app.arn_suffix
+    TargetGroup  = aws_lb_target_group.photo_app.arn_suffix
   }
 
   alarm_actions = [aws_sns_topic.alerts.arn]
-  ok_actions     = [aws_sns_topic.alerts.arn]
+  ok_actions    = [aws_sns_topic.alerts.arn]
 }

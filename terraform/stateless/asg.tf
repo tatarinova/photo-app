@@ -7,7 +7,7 @@ resource "aws_autoscaling_group" "photo_app" {
 
   min_size         = 2
   max_size         = 4
-  desired_capacity  = 2
+  desired_capacity = 2
 
   vpc_zone_identifier = local.sorted_subnet_ids
 
@@ -50,12 +50,12 @@ resource "aws_autoscaling_group" "photo_app" {
   }
 
   enabled_metrics = [
-  "GroupMinSize",
-  "GroupMaxSize",
-  "GroupDesiredCapacity",
-  "GroupInServiceInstances",
-  "GroupPendingInstances",
-]
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupPendingInstances",
+  ]
 
   metrics_granularity = "1Minute"
 
@@ -68,5 +68,5 @@ resource "aws_autoscaling_group" "photo_app" {
 
 resource "aws_autoscaling_attachment" "photo_app" {
   autoscaling_group_name = aws_autoscaling_group.photo_app.id
-  lb_target_group_arn   = aws_lb_target_group.photo_app.arn
+  lb_target_group_arn    = aws_lb_target_group.photo_app.arn
 }

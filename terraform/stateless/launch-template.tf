@@ -38,7 +38,7 @@ resource "aws_launch_template" "photo_app" {
   instance_type = var.instance_type
   key_name      = data.aws_key_pair.existing.key_name
 
-  vpc_security_group_ids = [ aws_security_group.ec2.id ]
+  vpc_security_group_ids = [aws_security_group.ec2.id]
 
   iam_instance_profile {
     name = aws_iam_instance_profile.ec2_profile.name

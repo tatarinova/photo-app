@@ -51,7 +51,10 @@ unzip /tmp/awscliv2.zip -d /tmp
 # Install CloudWatch Agent
 ####################################
 
-apt-get install -y amazon-cloudwatch-agent
+# Téléchargement et installation propre du paquet officiel CloudWatch Agent pour Ubuntu (x86_64)
+curl -o /tmp/amazon-cloudwatch-agent.deb https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+dpkg -i /tmp/amazon-cloudwatch-agent.deb
+rm /tmp/amazon-cloudwatch-agent.deb
 
 cat > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json <<'EOF'
 {

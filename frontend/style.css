@@ -1,14 +1,54 @@
+/* Style général du body */
 body {
+    background-color: #000000; /* Fond noir */
+    color: #f5f5f5;            /* Couleur de texte blanc cassé */
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 0;
+    padding: 20px;
 }
 
-img {
-    max-width: 300px;
-    margin: 10px;
+/* Titre au centre en blanc cassé */
+h1 {
+    text-align: center;        /* Centrer le titre */
+    color: #f5f5f5;            /* Blanc cassé */
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-color: #333333; /* Ligne de séparation discrète */
+    margin-bottom: 30px;
+}
+
+/* Disposition de la galerie en grille 3x3 */
+#gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 colonnes de largeur égale */
+    gap: 20px;                            /* Espace entre les photos */
+    max-width: 1200px;                    /* Largeur maximale de la grille */
+    margin: 0 auto;                       /* Centrer la grille sur la page */
+}
+
+/* Style de chaque carte photo */
+.photo-card {
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #1a1a1a;
+}
+
+/* Ajustement des images pour qu'elles aient toutes la même taille sans être déformées */
+.photo-card img {
+    width: 100%;
+    height: 300px;                        /* Hauteur fixe pour aligner la grille */
+    object-fit: cover;                    /* Conserve le ratio de l'image en la recadrant proprement */
     display: block;
 }
 
-.photo-card {
-    margin-bottom: 20px;
+/* Optionnel : Adaptation responsive sur petit écran / mobile */
+@media (max-width: 768px) {
+    #gallery {
+        grid-template-columns: 1fr;       /* Passe à 1 colonne sur mobile */
+    }
 }

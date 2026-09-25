@@ -4,7 +4,8 @@ environment = "dev"
 
 aws_region = "eu-west-3"
 
-### doit etre format CIDR, par exemple 1.2.3.4/32
+### format: CIDR IPv4 = IPv4/32
+### (les IP de Freebox sont dynamiques)
 my_ip = 
 
 domain_name = 

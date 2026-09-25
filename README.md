@@ -47,3 +47,16 @@ docker compose up --build
 cd C:\Users\natal\Documents\RABOTA\AWS
 
 ssh -i "photo-app-key.pem" ubuntu@<public DNS>
+
+## Find IPv4 : 
+PowerShell> curl -4 ifconfig.me 
+
+(CIDR IPv4 : X.X.X.X/32)
+
+OR 
+go to : https://ifconfig.me
+Mais chez moi, FireFox affiche IPv6
+
+OR 
+
+go to : https://www.monip.org/

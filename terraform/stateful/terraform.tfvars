@@ -1,7 +1,0 @@
-project_name = "photo-app"
-
-environment = "dev"
-
-aws_region = "eu-west-3"
-
-domain_name = "mafaphoto.com"

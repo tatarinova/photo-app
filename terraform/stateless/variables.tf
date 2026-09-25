@@ -27,3 +27,8 @@ variable "instance_type" {
 variable "domain_name" {
   type = string
 }
+
+variable "alert_email" {
+  description = "Email receiving CloudWatch/SNS alerts"
+  type        = string
+}

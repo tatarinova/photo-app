@@ -48,6 +48,18 @@ resource "aws_autoscaling_group" "photo_app" {
       desired_capacity,
     ]
   }
+
+  enabled_metrics = [
+  "GroupMinSize",
+  "GroupMaxSize",
+  "GroupDesiredCapacity",
+  "GroupInServiceInstances",
+  "GroupPendingInstances",
+]
+
+  metrics_granularity = "1Minute"
+
+
 }
 
 ##################################################

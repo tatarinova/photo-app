@@ -1,10 +1,14 @@
-from fastapi import FastAPI, File, UploadFile
-
-from fastapi.middleware.cors import CORSMiddleware
-
-from app.s3 import s3, BUCKET_NAME
-
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from app.s3 import upload_file_to_s3, generate_presigned_url, delete_file_from_s3
 import socket
+import uuid
+from datetime import datetime
+from app.dynamodb import (
+                            save_photo_metadata,
+                            get_photo_metadata,
+                            list_all_photos_metadata,
+                            delete_photo_metadata,
+)
 
 app = FastAPI(root_path="/api")
 
@@ -21,69 +25,67 @@ def health():
 def server():
     return {"hostname": socket.gethostname()}
 
-#### upload photos
+
+# 1. UPLOAD PHOTO  #### sera utilisé plus tard
 @app.post("/photos")
 async def upload_photo(file: UploadFile = File(...)):
+    # Génération d'un ID unique et d'une clé S3 propre
+    photo_id = str(uuid.uuid4())
+    s3_key = f"photos/{photo_id}_{file.filename}"
+    upload_time = datetime.now().isoformat()
     
-    s3.upload_fileobj(
-                        file.file,
-                        BUCKET_NAME,
-                        file.filename,
-                    )
+    # Étape A : Sauvegarde du fichier binaire dans S3
+    upload_file_to_s3(file.file, s3_key, file.content_type)
+
+    # Étape B : Sauvegarde des métadonnées dans DynamoDB
+    metadata = {
+        "photo_id": photo_id, # Clé primaire DynamoDB
+        "original_filename": file.filename,
+        "s3_key": s3_key,
+        "content_type": file.content_type,
+        "upload_date": upload_time,
+    }
+    save_photo_metadata(metadata) 
 
     return {
+        "photo_id": photo_id,
         "filename": file.filename,
-        "message": "uploaded"
+        "message": "uploaded successfully"
     }
 
-##### list photos
+
+# 2. LIST PHOTOS (Avantage DynamoDB : Récupération rapide + URL pré-signées)
 @app.get("/photos")
 def list_photos():
-
+    # Lecture depuis DynamoDB au lieu de lister S3 (beaucoup plus rapide)
+    items = list_all_photos_metadata()
     photos = []
 
-    response = s3.list_objects_v2(Bucket=BUCKET_NAME)
+    for item in items:
+        # Génération dynamique de l'URL d'accès temporaire S3
+        url = generate_presigned_url(item["s3_key"])
+        photos.append({
+            "photo_id": item["photo_id"],
+            "filename": item["original_filename"],
+            "upload_date": item.get("upload_date"),
+            "url": url,
+        })
 
-    for obj in response.get("Contents", []):
+    return {"photos": photos}
 
-        url = s3.generate_presigned_url(
-                                        "get_object",
-                                        Params={
-                                            "Bucket": BUCKET_NAME,
-                                            "Key": obj["Key"],
-                                        },
-                                        ExpiresIn=3600,
-                                        )
 
-        photos.append(
-                        {
-                            "filename": obj["Key"],
-                            "url": url,
-                        }
-                    )
+# 3. DELETE PHOTO #### sera utilisé plus tard
+@app.delete("/photos/{photo_id}")
+def delete_photo(photo_id: str):
+    # Étape A : Récupérer les métadonnées pour connaître le s3_key
+    item = get_photo_metadata(photo_id) 
+    if not item:
+        raise HTTPException(status_code=404, detail="Photo not found")
 
-    return { "photos": photos }
+    # Étape B : Supprimer le fichier binaire de S3
+    delete_file_from_s3(item["s3_key"])
 
-### ou 
-# @app.get("/photos")
-# def list_photos():
-#     return {
-#         "photos": [
-#             file.name
-#             for file in UPLOAD_DIR.iterdir()
-#             if file.is_file()
-#         ]
-#     }
+    # Étape C : Supprimer l'entrée dans DynamoDB
+    delete_photo_metadata(photo_id)
 
-@app.delete("/photos/{filename}")
-def delete_photo(filename: str):
-    
-    s3.delete_object(
-        Bucket=BUCKET_NAME,
-        Key=filename,
-    )
-
-    return {
-        "filename": filename,
-        "message": "deleted"
-    }
+    return {"photo_id": photo_id, "message": "deleted successfully"}

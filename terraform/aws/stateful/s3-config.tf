@@ -50,18 +50,34 @@ resource "aws_s3_bucket_versioning" "config" {
 }
 
 
-# ####################################################
-# # .env
-# ####################################################
+####################################################
+# Add new s3 object (.env) into s3-config bucket
+####################################################
 
-# resource "aws_s3_object" "env" {
+resource "aws_s3_object" "env" {
 
-#   bucket = aws_s3_bucket.config.id
+  bucket = aws_s3_bucket.config.id
 
-#   key = ".env"
+  key = ".env"
 
-#   source = "${path.module}/../.env"
+  source = "${path.module}/../../../.env"
 
-#   etag = filemd5("${path.module}/../.env")
+  etag = filemd5("${path.module}/../../../.env")
 
-# }
+}
+
+####################################################
+# Add new s3 object (docker-compose.yml) into s3-config bucket
+####################################################
+
+resource "aws_s3_object" "docker-compose" {
+
+  bucket = aws_s3_bucket.config.id
+
+  key = "docker-compose.yml"
+
+  source = "${path.module}/../../../docker-compose.yml"
+
+  etag = filemd5("${path.module}/../../../docker-compose.yml")
+
+}

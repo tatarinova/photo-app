@@ -4,9 +4,13 @@ services:
 
     expose:
       - "8000"
-
+      
+    env_file:
+      - .env
     environment:
-      BUCKET_NAME: photo-app-dev-tf-mafalda-photos
+      - BUCKET_NAME=${BUCKET_NAME}
+      - DYNAMODB_TABLE=${DYNAMODB_TABLE}
+      - AWS_REGION=${AWS_REGION}
 
     restart: unless-stopped  
 

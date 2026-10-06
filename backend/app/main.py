@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, status
 from app.s3 import upload_file_to_s3, generate_presigned_url, delete_file_from_s3
 import socket
 import uuid
@@ -9,9 +9,13 @@ from app.dynamodb import (
                             list_all_photos_metadata,
                             delete_photo_metadata,
 )
+from app.config import ADMIN_USERNAME, ADMIN_PASSWORD
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+import secrets
 
 app = FastAPI(root_path="/api")
 
+security = HTTPBasic()
 
 @app.get("/")
 def root():
@@ -26,8 +30,22 @@ def server():
     return {"hostname": socket.gethostname()}
 
 
-# 1. UPLOAD PHOTO  #### sera utilisé plus tard
-@app.post("/photos")
+
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+    """Vérifie le nom d'utilisateur et le mot de passe admin"""
+    is_user_correct = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
+    is_pass_correct = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
+    
+    if not (is_user_correct and is_pass_correct):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Accès refusé : Identifiants administrateur incorrects",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
+
+# 1. UPLOAD PHOTO  (protegé par le mot de passe)
+@app.post("/photos", dependencies=[Depends(verify_admin)])
 async def upload_photo(file: UploadFile = File(...)):
     # Génération d'un ID unique et d'une clé S3 propre
     photo_id = str(uuid.uuid4())
@@ -54,7 +72,8 @@ async def upload_photo(file: UploadFile = File(...)):
     }
 
 
-# 2. LIST PHOTOS (Avantage DynamoDB : Récupération rapide + URL pré-signées)
+# 2. LIST PHOTOS (access publique)
+# (Avantage DynamoDB : Récupération rapide + URL pré-signées)
 @app.get("/photos")
 def list_photos():
     # Lecture depuis DynamoDB au lieu de lister S3 (beaucoup plus rapide)
@@ -74,8 +93,8 @@ def list_photos():
     return {"photos": photos}
 
 
-# 3. DELETE PHOTO #### sera utilisé plus tard
-@app.delete("/photos/{photo_id}")
+# 3. DELETE PHOTO (protegé par le mot de passe)
+@app.delete("/photos/{photo_id}", dependencies=[Depends(verify_admin)])
 def delete_photo(photo_id: str):
     # Étape A : Récupérer les métadonnées pour connaître le s3_key
     item = get_photo_metadata(photo_id) 

@@ -49,21 +49,13 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
 async def upload_photo(file: UploadFile = File(...)):
     # Génération d'un ID unique et d'une clé S3 propre
     photo_id = str(uuid.uuid4())
-    s3_key = f"photos/{photo_id}_{file.filename}"
+    s3_key = f"originals/{photo_id}_{file.filename}"
     upload_time = datetime.now().isoformat()
     
-    # Étape A : Sauvegarde du fichier binaire dans S3
+    # Sauvegarde du fichier binaire dans S3
     upload_file_to_s3(file.file, s3_key, file.content_type)
 
-    # Étape B : Sauvegarde des métadonnées dans DynamoDB
-    metadata = {
-        "photo_id": photo_id, # Clé primaire DynamoDB
-        "original_filename": file.filename,
-        "s3_key": s3_key,
-        "content_type": file.content_type,
-        "upload_date": upload_time,
-    }
-    save_photo_metadata(metadata) 
+    # C'est Lambda qui va ecrire les meta donnees dans DynamoDB
 
     return {
         "photo_id": photo_id,
@@ -81,13 +73,16 @@ def list_photos():
     photos = []
 
     for item in items:
-        # Génération dynamique de l'URL d'accès temporaire S3
-        url = generate_presigned_url(item["s3_key"])
+        # Génération dynamique des deux types d'URL S3 temporaires
+        thumb_url = generate_presigned_url(item["thumbnail_s3_key"])
+        orig_url = generate_presigned_url(item["original_s3_key"])
+
         photos.append({
             "photo_id": item["photo_id"],
             "filename": item["original_filename"],
             "upload_date": item.get("upload_date"),
-            "url": url,
+            "thumbnail_url": thumb_url,
+            "original_url": orig_url,
         })
 
     return {"photos": photos}

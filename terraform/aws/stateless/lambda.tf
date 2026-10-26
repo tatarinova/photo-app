@@ -75,11 +75,11 @@ resource "aws_lambda_function" "thumbnail_generator" {
   function_name = "${local.resource_name}-thumbnail-generator"
   role          = aws_iam_role.lambda_thumbnail_role.arn
 
-  # Le fichier ZIP contenant le script Python (xxxxx.py) et les librairies (Pillow)
+  # Le fichier ZIP contenant le script Python (gen_photo_miniatures.py) et les librairies (Pillow)
   filename         = "lambda_function.zip"
   source_code_hash = filebase64sha256("lambda_function.zip")
 
-  handler = "xxxxx.lambda_handler" # Nom du fichier Python (xxxxx) . Nom de la fonction (lambda_handler)
+  handler = "gen_photo_miniatures.lambda_handler" # Nom du fichier Python (gen_photo_miniatures) . Nom de la fonction (lambda_handler)
   runtime = "python3.9"          # Version de Python
 
   # Pour le traitement d'image on augmente la RAM et le timeout (default : 128, 3 sec)
@@ -89,7 +89,7 @@ resource "aws_lambda_function" "thumbnail_generator" {
   # on passe les variables d'env au script Python
   environment {
     variables = {
-      DYNAMODB_TABLE_NAME = data.terraform_remote_state.stateful.outputs.dynamodb_photo_metadata_name
+      DYNAMODB_TABLE = data.terraform_remote_state.stateful.outputs.dynamodb_photo_metadata_name
       DESTINATION_PREFIX  = "miniatures/"
     }
   }

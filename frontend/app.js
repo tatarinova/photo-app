@@ -17,7 +17,9 @@ async function loadPhotos() {
         card.className = "photo-card";
 
         card.innerHTML = `
-            <img src="${photo.url}" alt="photo">
+            <a href="${photo.original_url}" target="_blank">
+                <img src="${photo.thumbnail_url}" alt="${photo.filename}">
+            </a>
         `;
 
         gallery.appendChild(card);

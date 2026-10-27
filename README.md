@@ -62,13 +62,18 @@ OR
 go to : https://www.monip.org/
 
 
-## Regenerer lambda_function.zip (sous Windows): 
+## Generer lambda_function.zip (sous Windows pour Linux): 
 cd lambda/
+
+(Remove-Item -Recurse -Force .\temp_package -ErrorAction SilentlyContinue)
+(Remove-Item -Force .\lambda_function.zip -ErrorAction SilentlyContinue)
 
 mkdir temp_package
 
-uv pip install -r requirements.txt --target temp_package
+python -m pip install --isolated Pillow==10.4.0 --platform manylinux2014_x86_64 --target .\temp_package --implementation cp --python-version 3.9 --only-binary=:all: --force-reinstall --no-user 
 
-Compress-Archive -Path .\temp_package\* -DestinationPath .\lambda_function.zip -Force 
+Copy-Item gen_photo_miniatures.py -Destination .\temp_package\
 
-rm -rf temp_package
+Compress-Archive -Path .\temp_package\* -DestinationPath .\lambda_function.zip -Force
+
+Remove-Item -Recurse -Force .\temp_package

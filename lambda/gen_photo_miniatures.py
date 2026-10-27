@@ -1,3 +1,7 @@
+'''
+WARNING : if we modify this file --> regenerate and commit lambda_function.zip
+'''
+
 import os
 import urllib.parse  ### encoding / decoding
 import boto3

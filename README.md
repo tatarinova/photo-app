@@ -60,3 +60,15 @@ Mais chez moi, FireFox affiche IPv6
 OR 
 
 go to : https://www.monip.org/
+
+
+## Regenerer lambda_function.zip (sous Windows): 
+cd lambda/
+
+mkdir temp_package
+
+uv pip install -r requirements.txt --target temp_package
+
+Compress-Archive -Path .\temp_package\* -DestinationPath .\lambda_function.zip -Force 
+
+rm -rf temp_package

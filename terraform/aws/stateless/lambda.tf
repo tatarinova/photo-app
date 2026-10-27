@@ -44,7 +44,9 @@ resource "aws_iam_policy" "lambda_thumbnail_policy" {
         # Autoriser la mise à jour de la table DynamoDB
         Effect = "Allow"
         Action = [
-          "dynamodb:UpdateItem"
+          "dynamodb:PutItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:GetItem"
         ]
         Resource = data.terraform_remote_state.stateful.outputs.dynamodb_photo_metadata_arn
       },

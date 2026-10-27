@@ -76,8 +76,8 @@ resource "aws_lambda_function" "thumbnail_generator" {
   role          = aws_iam_role.lambda_thumbnail_role.arn
 
   # Le fichier ZIP contenant le script Python (gen_photo_miniatures.py) et les librairies (Pillow)
-  filename         = "lambda_function.zip"
-  source_code_hash = filebase64sha256("lambda_function.zip")
+  filename         = "../../../lambda/lambda_function.zip"
+  source_code_hash = filebase64sha256("../../../lambda/lambda_function.zip")
 
   handler = "gen_photo_miniatures.lambda_handler" # Nom du fichier Python (gen_photo_miniatures) . Nom de la fonction (lambda_handler)
   runtime = "python3.9"          # Version de Python

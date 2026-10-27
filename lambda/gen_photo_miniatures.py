@@ -57,7 +57,7 @@ def lambda_handler(event, context):
         destination_key = f"{DESTINATION_PREFIX}{file_name}"
 
         # 7. Upload generated miniature 
-        s3_client.upload_file(upload_path, bucket_name, destination_key)
+        s3_client.upload_file(upload_path, bucket_name, destination_key, ExtraArgs={"ContentType": "image/jpeg"} )
         print(f"Miniature uploadée avec succès vers : {destination_key}")
 
         # 8. Get size of the miniature file [Bytes]

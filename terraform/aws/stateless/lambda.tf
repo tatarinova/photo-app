@@ -1,6 +1,5 @@
-# ------------------------------------------------------------------------------
-# 1. RÔLE IAM POUR LA LAMBDA 
-# ------------------------------------------------------------------------------
+
+# 1. IAM role for the lambda 
 resource "aws_iam_role" "lambda_thumbnail_role" {
   name = "${local.resource_name}-lambda-thumbnail-role"
 
@@ -18,9 +17,7 @@ resource "aws_iam_role" "lambda_thumbnail_role" {
   })
 }
 
-# ------------------------------------------------------------------------------
-# 2. PERMISSIONS POUR LA LAMBDA
-# ------------------------------------------------------------------------------
+# 2. IAM policy for the lambda
 resource "aws_iam_policy" "lambda_thumbnail_policy" {
   name        = "${local.resource_name}-lambda-thumbnail-policy"
   description = "Droits pour lire/ecrire dans S3 et maj DynamoDB"
@@ -29,7 +26,7 @@ resource "aws_iam_policy" "lambda_thumbnail_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        # Autoriser la lecture dans le dossier des originaux et l'écriture dans miniatures
+        # allow reading originals and writing thumbnails
         Effect = "Allow"
         Action = [
           "s3:GetObject",
@@ -40,8 +37,9 @@ resource "aws_iam_policy" "lambda_thumbnail_policy" {
           "${data.terraform_remote_state.stateful.outputs.bucket_arn}/miniatures/*",
         ]
       },
+
       {
-        # Autoriser la mise à jour de la table DynamoDB
+        # allow DynamoDB table updates
         Effect = "Allow"
         Action = [
           "dynamodb:PutItem",
@@ -50,8 +48,9 @@ resource "aws_iam_policy" "lambda_thumbnail_policy" {
         ]
         Resource = data.terraform_remote_state.stateful.outputs.dynamodb_photo_metadata_arn
       },
+
       {
-        # Autoriser la création de logs (utile pour debug)
+        # allow log creation (useful for debugging)
         Effect = "Allow"
         Action = [
           "logs:CreateLogGroup",
@@ -64,31 +63,30 @@ resource "aws_iam_policy" "lambda_thumbnail_policy" {
   })
 }
 
-# Attacher la politique au rôle
+# Attach policy to the role
 resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
   role       = aws_iam_role.lambda_thumbnail_role.name
   policy_arn = aws_iam_policy.lambda_thumbnail_policy.arn
 }
 
-# ------------------------------------------------------------------------------
-# 3. LA FONCTION AWS LAMBDA
-# ------------------------------------------------------------------------------
+
+# 3. AWS Lambda function
 resource "aws_lambda_function" "thumbnail_generator" {
   function_name = "${local.resource_name}-thumbnail-generator"
   role          = aws_iam_role.lambda_thumbnail_role.arn
 
-  # Le fichier ZIP contenant le script Python (gen_photo_miniatures.py) et les librairies (Pillow)
+  # ZIP file containing the Python script (gen_photo_miniatures.py) and dependencies (Pillow)
   filename         = "../../../lambda/lambda_function.zip"
   source_code_hash = filebase64sha256("../../../lambda/lambda_function.zip")
 
-  handler = "gen_photo_miniatures.lambda_handler" # Nom du fichier Python (gen_photo_miniatures) . Nom de la fonction (lambda_handler)
-  runtime = "python3.9"          # Version de Python
+  handler = "gen_photo_miniatures.lambda_handler" # Python file (gen_photo_miniatures) and handler function (lambda_handler)
+  runtime = "python3.9"          # Python runtime version
 
-  # Pour le traitement d'image on augmente la RAM et le timeout (default : 128, 3 sec)
+  # Increase RAM and timeout for image processing (default : 128, 3 sec)
   memory_size = 512
   timeout     = 15
 
-  # on passe les variables d'env au script Python
+  # pass environment variables to the Python script
   environment {
     variables = {
       DYNAMODB_TABLE = data.terraform_remote_state.stateful.outputs.dynamodb_photo_metadata_name
@@ -97,9 +95,8 @@ resource "aws_lambda_function" "thumbnail_generator" {
   }
 }
 
-# ------------------------------------------------------------------------------
-# 4. AUTORISER S3 À INVOQUER LA LAMBDA
-# ------------------------------------------------------------------------------
+
+# 4. Allow S3 to invoke the Lambda
 resource "aws_lambda_permission" "allow_bucket" {
   statement_id  = "AllowExecutionFromS3Bucket"
   action        = "lambda:InvokeFunction"
@@ -108,9 +105,8 @@ resource "aws_lambda_permission" "allow_bucket" {
   source_arn    = data.terraform_remote_state.stateful.outputs.bucket_arn
 }
 
-# ------------------------------------------------------------------------------
-# 5. LE DÉCLENCHEUR S3 (EVENT NOTIFICATION)
-# ------------------------------------------------------------------------------
+
+# 5. S3 event notification trigger
 resource "aws_s3_bucket_notification" "bucket_notification" {
   bucket = data.terraform_remote_state.stateful.outputs.bucket_name
 
@@ -118,11 +114,11 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
     lambda_function_arn = aws_lambda_function.thumbnail_generator.arn
     events              = ["s3:ObjectCreated:*"]
 
-    # LA SÉCURITÉ ANTI-BOUCLE INFINIE :
+    # anti-infinite loop security
     filter_prefix = "originals/"
-    filter_suffix = ".jpg" # cibler seuelement les images
+    filter_suffix = ".jpg" # target only images
   }
 
-  # Terraform doit créer l'autorisation (bloc 4) AVANT de configurer la notification
+  # Ensure permission is created (step 4) BEFORE configuring notification
   depends_on = [aws_lambda_permission.allow_bucket]
 }

@@ -9,13 +9,11 @@ echo "===== User Data started ====="
 ####################################
 # Update Ubuntu
 ####################################
-
 apt-get update -y
 
 ####################################
 # Install Docker
 ####################################
-
 apt-get install -y docker.io unzip curl 
 
 systemctl enable docker
@@ -25,7 +23,6 @@ systemctl start docker
 ####################################
 # Install Docker Compose
 ####################################
-
 mkdir -p /usr/local/lib/docker/cli-plugins
 
 curl -SL \
@@ -39,19 +36,15 @@ docker compose version
 ####################################
 # Install AWS CLI v2
 ####################################
-
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip"
 
 unzip /tmp/awscliv2.zip -d /tmp
 
 /tmp/aws/install --update
 
-
-####################################
-# Install CloudWatch Agent
-####################################
-
-# Téléchargement et installation propre du paquet officiel CloudWatch Agent pour Ubuntu (x86_64)
+#############################################################
+# Download and install CloudWatch Agent for Ubuntu (x86_64)
+#############################################################
 curl -o /tmp/amazon-cloudwatch-agent.deb https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
 dpkg -i /tmp/amazon-cloudwatch-agent.deb
 rm /tmp/amazon-cloudwatch-agent.deb
@@ -89,21 +82,19 @@ EOF
 ####################################
 # Create application directory
 ####################################
-
 mkdir -p /opt/photo-app
-
 cd /opt/photo-app
 
-####################################
-# Download docker-compose.yml 
-#################################### 
+####################################################
+# Download docker-compose.yml from s3-config bucket
+####################################################
 aws s3 cp \
 s3://${config_bucket}/docker-compose.yml \
 /opt/photo-app/docker-compose.yml
 
-####################################
-# Download .env 
-#################################### 
+####################################################
+# Download .env from s3-config bucket
+####################################################
 aws s3 cp \
 s3://${config_bucket}/.env \
 /opt/photo-app/.env || true

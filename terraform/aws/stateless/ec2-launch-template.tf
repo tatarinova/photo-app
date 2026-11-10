@@ -1,7 +1,4 @@
-##################################################
 # AMI Ubuntu 24.04
-##################################################
-
 data "aws_ami" "ubuntu" {
 
   most_recent = true
@@ -19,18 +16,14 @@ data "aws_ami" "ubuntu" {
   }
 }
 
-##################################################
-# Existing key pair (we use existing pem)
-##################################################
 
+# Existing key pair (use existing pem)
 data "aws_key_pair" "existing" {
   key_name = "photo-app-key"
 }
 
-##################################################
-# Launch Template
-##################################################
 
+# Launch Template
 resource "aws_launch_template" "photo_app" {
   name_prefix = "${local.resource_name}-lt-"
 

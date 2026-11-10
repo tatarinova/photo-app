@@ -1,6 +1,5 @@
-##################################################
-# Auto Scaling Group
-##################################################
+
+# Auto Scaling Group (ASG)
 
 resource "aws_autoscaling_group" "photo_app" {
   name = "${local.resource_name}-asg"
@@ -58,13 +57,10 @@ resource "aws_autoscaling_group" "photo_app" {
   ]
 
   metrics_granularity = "1Minute"
-
-
 }
 
-##################################################
+
 # Attach ASG to Target Group
-##################################################
 
 resource "aws_autoscaling_attachment" "photo_app" {
   autoscaling_group_name = aws_autoscaling_group.photo_app.id

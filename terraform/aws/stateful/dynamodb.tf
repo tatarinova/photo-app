@@ -1,15 +1,12 @@
-####################################################
-### Table DynamoDB - Métadonnées des photos
-####################################################
-
+# DynamoDB table for photo metadata
 resource "aws_dynamodb_table" "photo_metadata" {
   name         = "${local.resource_name}-photo-metadata"
-  billing_mode = "PAY_PER_REQUEST" # Mode Serverless (0 € si inutilisé)
+  billing_mode = "PAY_PER_REQUEST" # Serverless billing mode (0 € if not used)
   hash_key     = "photo_id"
 
   attribute {
     name = "photo_id"
-    type = "S" # S = String (Chaîne de caractères)
+    type = "S" # String type
   }
 
   tags = merge(

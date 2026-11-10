@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional
 
-# Modèle décrivant les métadonnées stockées dans DynamoDB
+# Model describing metadata stored in DynamoDB
 class PhotoMetadata(BaseModel):
     photo_id: str
     original_filename: str
@@ -9,10 +9,10 @@ class PhotoMetadata(BaseModel):
     thumbnail_s3_key: str
     file_size: int
     content_type: str
-    upload_date: str # Format ISO-8601 UTC en String
+    upload_date: str # ISO-8601 UTC string format
     title: Optional[str] = None
 
-# Modèle renvoyé au Frontend (Métadonnées + URL pré-signée S3)
+# Model returned to the Frontend (Metadata + S3 presigned URLs)
 class PhotoResponse(BaseModel):
     photo_id: str
     original_filename: str

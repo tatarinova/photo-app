@@ -5,11 +5,9 @@ data "aws_acm_certificate" "photo_app" {
   statuses = ["ISSUED"]
 
   most_recent = true
-
 }
 
 #### Listener HTTP 80
-
 resource "aws_lb_listener" "http" {
 
   load_balancer_arn = aws_lb.photo_app.arn
@@ -29,16 +27,12 @@ resource "aws_lb_listener" "http" {
       protocol = "HTTPS"
 
       status_code = "HTTP_301"
-
     }
-
   }
-
 }
 
 
 ### Listener HTTPS 443
-
 resource "aws_lb_listener" "https" {
 
   load_balancer_arn = aws_lb.photo_app.arn
@@ -57,7 +51,5 @@ resource "aws_lb_listener" "https" {
     type = "forward"
 
     target_group_arn = aws_lb_target_group.photo_app.arn
-
   }
-
 }

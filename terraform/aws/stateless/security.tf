@@ -1,6 +1,4 @@
-
 ############ SG for ALB (+ rules)
-
 resource "aws_security_group" "alb" {
 
   name = "${local.resource_name}-alb-sg"
@@ -10,7 +8,6 @@ resource "aws_security_group" "alb" {
   vpc_id = data.aws_vpc.default.id
 
   tags = local.common_tags
-
 }
 
 resource "aws_vpc_security_group_ingress_rule" "alb_http" {
@@ -24,7 +21,6 @@ resource "aws_vpc_security_group_ingress_rule" "alb_http" {
   to_port = 80
 
   cidr_ipv4 = "0.0.0.0/0"
-
 }
 
 resource "aws_vpc_security_group_ingress_rule" "alb_https" {
@@ -38,7 +34,6 @@ resource "aws_vpc_security_group_ingress_rule" "alb_https" {
   to_port = 443
 
   cidr_ipv4 = "0.0.0.0/0"
-
 }
 
 resource "aws_vpc_security_group_egress_rule" "alb_out" {
@@ -48,12 +43,10 @@ resource "aws_vpc_security_group_egress_rule" "alb_out" {
   ip_protocol = "-1"
 
   cidr_ipv4 = "0.0.0.0/0"
-
 }
 
 
 ######## SG for EC2 (+ rules)
-
 resource "aws_security_group" "ec2" {
 
   name = "${local.resource_name}-ec2-sg"

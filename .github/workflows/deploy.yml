@@ -13,11 +13,11 @@ on:
       - master
 
 
-# JOB # 1 : Build --> push images in ECR
-# JOB # 2 : Deploy for each EC2 (matrix) 
+# JOB # 1 : Build and push images in ECR
+# JOB # 2 : Deploy to EC2 instances via SSM 
 
 jobs:
-# JOB 1 : Build & Push (Exécuté UNE seule fois)
+# JOB 1 : Build & Push (executed once)
   build-and-push:
     runs-on: ubuntu-latest
     steps:
@@ -46,9 +46,9 @@ jobs:
           docker tag $FRONTEND_IMAGE:latest $ECR_REGISTRY/$FRONTEND_IMAGE:latest
           docker push $ECR_REGISTRY/$FRONTEND_IMAGE:latest
 
-  # JOB 2 : Deploiement sur chaque instance EC2 via la Matrice
+  # JOB 2 : Deploy to each EC2 instance via SSM targets
   deploy:
-    needs: build-and-push # Attend que le job 1 soit terminé
+    needs: build-and-push # job 1 should be completed
     runs-on: ubuntu-latest
 
     steps:

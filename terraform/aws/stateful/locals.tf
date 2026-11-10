@@ -4,7 +4,7 @@ locals {
 
   resource_name = "${local.prefix}-tf"
 
-  ### tf : to avoid confusion between resources created manually and those created by Terraform
+  ### -tf : to avoid confusion between resources created manually and those created by Terraform
 
   common_tags = {
     Project     = var.project_name

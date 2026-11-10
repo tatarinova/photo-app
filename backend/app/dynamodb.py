@@ -4,20 +4,28 @@ from app.config import DYNAMODB_TABLE, AWS_REGION
 dynamodb = boto3.resource("dynamodb", region_name=AWS_REGION)
 table = dynamodb.Table(DYNAMODB_TABLE)
 
-def save_photo_metadata(item: dict):
-    """Insère un nouvel élément dans DynamoDB"""
+def save_photo_metadata(item: dict) -> None:
+    """
+    Save a new photo metadata item to DynamoDB
+    """
     table.put_item(Item=item) 
 
-def get_photo_metadata(photo_id: str) -> dict:
-    """Récupère les métadonnées d'une photo par son ID[cite: 2]"""
+def get_photo_metadata(photo_id: str) -> dict | None:
+    """
+    Retrieve photo metadata by ID
+    """
     response = table.get_item(Key={"photo_id": photo_id}) 
     return response.get("Item") 
 
 def list_all_photos_metadata() -> list:
-    """Scanne la table pour récupérer la liste de toutes les photos"""
+    """
+    Scan the table to retrieve all photo metadata
+    """
     response = table.scan()
     return response.get("Items", [])
 
-def delete_photo_metadata(photo_id: str):
-    """Supprime l'entrée des métadonnées dans DynamoDB"""
+def delete_photo_metadata(photo_id: str) -> None:
+    """
+    Delete photo metadata entry from DynamoDB
+    """
     table.delete_item(Key={"photo_id": photo_id})

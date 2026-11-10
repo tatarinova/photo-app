@@ -1,6 +1,4 @@
-##################################################
 # Monitoring: SNS + CloudWatch Logs + Alarms
-##################################################
 
 resource "aws_sns_topic" "alerts" {
   name = "${local.resource_name}-alerts"
@@ -13,9 +11,8 @@ resource "aws_sns_topic_subscription" "alerts_email" {
   endpoint  = var.alert_email
 }
 
-##################################################
+
 # Log groups (ready for CloudWatch Agent later)
-##################################################
 
 resource "aws_cloudwatch_log_group" "user_data" {
   name              = "/${local.resource_name}/ec2/user-data"
@@ -35,19 +32,15 @@ resource "aws_cloudwatch_log_group" "nginx" {
   tags              = local.common_tags
 }
 
-##################################################
-# Give EC2 the permissions needed for CloudWatch Agent
-##################################################
 
+# Give EC2 permissions for CloudWatch Agent
 resource "aws_iam_role_policy_attachment" "cloudwatch_agent" {
   role       = aws_iam_role.ec2_role.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
-##################################################
-# Alarm: ASG too small
-##################################################
 
+# Alarm: ASG too small
 resource "aws_cloudwatch_metric_alarm" "asg_in_service_low" {
   alarm_name          = "${local.resource_name}-asg-in-service-low"
   alarm_description   = "Auto Scaling Group has too few instances in service"
@@ -69,10 +62,8 @@ resource "aws_cloudwatch_metric_alarm" "asg_in_service_low" {
   ok_actions    = [aws_sns_topic.alerts.arn]
 }
 
-##################################################
-# Alarm: ALB unhealthy targets
-##################################################
 
+# Alarm: ALB unhealthy targets
 resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
   alarm_name          = "${local.resource_name}-alb-unhealthy-hosts"
   alarm_description   = "ALB has unhealthy targets"
@@ -95,10 +86,8 @@ resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
   ok_actions    = [aws_sns_topic.alerts.arn]
 }
 
-##################################################
-# Alarm: ALB target 5xx errors
-##################################################
 
+# Alarm: ALB target 5xx errors
 resource "aws_cloudwatch_metric_alarm" "alb_target_5xx" {
   alarm_name          = "${local.resource_name}-alb-target-5xx"
   alarm_description   = "Targets are returning 5xx errors"

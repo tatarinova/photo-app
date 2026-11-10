@@ -3,12 +3,11 @@ from app.s3 import upload_file_to_s3, generate_presigned_url, delete_file_from_s
 import socket
 import uuid
 from datetime import datetime
-from app.dynamodb import (
-                            save_photo_metadata,
+from app.dynamodb import (  save_photo_metadata,
                             get_photo_metadata,
                             list_all_photos_metadata,
                             delete_photo_metadata,
-)
+                            )
 from app.config import ADMIN_USERNAME, ADMIN_PASSWORD
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import secrets
@@ -32,30 +31,37 @@ def server():
 
 
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
-    """Vérifie le nom d'utilisateur et le mot de passe admin"""
+    """
+    Verify admin username and password
+    """
+
+    if not credentials:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Credentials required",
+            headers={"WWW-Authenticate": "Basic"},
+        )
     is_user_correct = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
     is_pass_correct = secrets.compare_digest(credentials.password, ADMIN_PASSWORD)
     
     if not (is_user_correct and is_pass_correct):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Accès refusé : Identifiants administrateur incorrects",
+            detail="Access denied: Incorrect administrator credentials",
             headers={"WWW-Authenticate": "Basic"},
         )
     return credentials.username
 
-# 1. UPLOAD PHOTO  (protegé par le mot de passe)
+# 1. UPLOAD PHOTO  (protected by password)
 @app.post("/photos", dependencies=[Depends(verify_admin)])
 async def upload_photo(file: UploadFile = File(...)):
-    # Génération d'un ID unique et d'une clé S3 propre
+    # generate unique ID and clean S3 key
     photo_id = str(uuid.uuid4())
     s3_key = f"originals/{photo_id}_{file.filename}"
     upload_time = datetime.now().isoformat()
     
-    # Sauvegarde du fichier binaire dans S3
+    # save binary file to S3
     upload_file_to_s3(file.file, s3_key, file.content_type)
-
-    # C'est Lambda qui va ecrire les meta donnees dans DynamoDB
 
     return {
         "photo_id": photo_id,
@@ -64,16 +70,16 @@ async def upload_photo(file: UploadFile = File(...)):
     }
 
 
-# 2. LIST PHOTOS (access publique)
-# (Avantage DynamoDB : Récupération rapide + URL pré-signées)
+# 2. LIST PHOTOS (public access)
+# (DynamoDB advantage: fast retrieval + presigned URLs)
 @app.get("/photos")
 def list_photos():
-    # Lecture depuis DynamoDB au lieu de lister S3 (beaucoup plus rapide)
+    # read from DynamoDB instead of listing S3 (much faster)
     items = list_all_photos_metadata()
     photos = []
 
     for item in items:
-        # Génération dynamique des deux types d'URL S3 temporaires
+        # dynamicaly generate both temporary S3 URL types
         thumb_url = generate_presigned_url(item["thumbnail_s3_key"])
         orig_url = generate_presigned_url(item["original_s3_key"])
 
@@ -88,18 +94,18 @@ def list_photos():
     return {"photos": photos}
 
 
-# 3. DELETE PHOTO (protegé par le mot de passe)
+# 3. DELETE PHOTO (password protected)
 @app.delete("/photos/{photo_id}", dependencies=[Depends(verify_admin)])
 def delete_photo(photo_id: str):
-    # Étape A : Récupérer les métadonnées pour connaître le s3_key
+    # step 1: retrieve metadata to get the s3_key
     item = get_photo_metadata(photo_id) 
     if not item:
         raise HTTPException(status_code=404, detail="Photo not found")
 
-    # Étape B : Supprimer le fichier binaire de S3
+    # step 2: Delete binary file from S3
     delete_file_from_s3(item["s3_key"])
 
-    # Étape C : Supprimer l'entrée dans DynamoDB
+    # step 3: delete entry from DynamoDB
     delete_photo_metadata(photo_id)
 
     return {"photo_id": photo_id, "message": "deleted successfully"}

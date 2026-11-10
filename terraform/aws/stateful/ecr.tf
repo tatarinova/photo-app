@@ -28,8 +28,8 @@ resource "aws_ecr_repository" "backend" {
 
 
 ###### Lifecycle policy (delete old images) for backeknd and frontend
-###### in case if oneday we decide to do versioning of images
-###### and we do not want explose ECR
+###### in case if one day we decide to do versioning of images
+###### and we do not want explose ECR (keep only 10 last images)
 
 resource "aws_ecr_lifecycle_policy" "frontend" {
 
@@ -40,33 +40,22 @@ resource "aws_ecr_lifecycle_policy" "frontend" {
     rules = [
 
       {
-
         rulePriority = 1
 
         description = "Keep last 10 images"
 
         selection = {
-
           tagStatus = "any"
-
           countType = "imageCountMoreThan"
-
           countNumber = 10
-
         }
 
         action = {
-
           type = "expire"
-
         }
-
       }
-
     ]
-
   })
-
 }
 
 resource "aws_ecr_lifecycle_policy" "backend" {
@@ -78,31 +67,20 @@ resource "aws_ecr_lifecycle_policy" "backend" {
     rules = [
 
       {
-
         rulePriority = 1
 
         description = "Keep last 10 images"
 
         selection = {
-
           tagStatus = "any"
-
           countType = "imageCountMoreThan"
-
           countNumber = 10
-
         }
 
         action = {
-
           type = "expire"
-
         }
-
       }
-
     ]
-
   })
-
 }

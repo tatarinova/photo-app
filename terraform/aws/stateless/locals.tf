@@ -13,7 +13,6 @@ locals {
   }
 
   sorted_subnet_ids = sort(data.aws_subnets.default.ids)
-
 }
 
 

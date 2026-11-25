@@ -23,33 +23,34 @@ This project is still evolving, but the base architecture is already in place an
 ## What it does
 
 - Displays photos in a web gallery
-- Exposes a Python backend API with FastAPI
-- Stores uploaded photos in Amazon S3
-- Automatically generates thumbnails with an AWS Lambda function
-- Stores photo metadata in Amazon DynamoDB
-- Runs the application in Docker containers on EC2 instances
-- Uses an Auto Scaling Group with a minimum of 2 and a maximum of 4 EC2 instances
-- Uses an Application Load Balancer in front of the EC2 instances
-- Deploys application changes automatically with GitHub Actions
-- Pushes new container images to Amazon ECR
+- Exposes a Python backend API with **FastAPI**
+- Stores uploaded photos in **Amazon S3**
+- Automatically generates thumbnails with an **AWS Lambda** function
+- Stores photo metadata in **Amazon DynamoDB**
+- Runs the application in Docker containers on **EC2** instances
+- Uses an **Auto Scaling Group** (ASG) with a minimum of 2 and a maximum of 4 EC2 instances
+- Uses an **Application Load Balancer** (ALB) in front of the EC2 instances
+- Deploys application changes automatically with **GitHub Actions**
+- Pushes new container images to **Amazon ECR**
+- Uses **IAM** roles, policies, and instance profiles with restricted permissions
 
 ## How it works
 
 1. A new photo is uploaded to the S3 bucket (`originals/` folder).
 2. The upload triggers a Lambda function.
 3. The Lambda function generates a thumbnail.
-4. The thumbnail is stored in the same bucket, (`thumbnails/` folder).
+4. The thumbnail is stored in the same bucket (`thumbnails/` folder).
 5. The Lambda function also writes photo metadata into DynamoDB.
 6. The frontend displays the gallery through the backend API.
 
 Photos can be added in two ways:
 - directly from the AWS S3 console
-- via the Swagger API interface (with password authentication)
+- through the Swagger API interface, protected by password authentication
 
 ## AWS & tools used
 
-- AWS: EC2, Auto Scaling Group, ALB, S3, DynamoDB, Lambda, ECR, IAM
-- Infrastructure as Code: Terraform
-- Containers: Docker, Docker Compose
-- CI/CD: GitHub Actions
-- App code: Python, FastAPI, HTML/CSS/JavaScript
+- **AWS**: EC2, Auto Scaling Group, ALB, S3, DynamoDB, Lambda, ECR, IAM
+- **Infrastructure as Code**: Terraform
+- **Containers**: Docker, Docker Compose
+- **CI/CD**: GitHub Actions
+- **App code**: Python, FastAPI, HTML/CSS/JavaScript

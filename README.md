@@ -54,3 +54,47 @@ Photos can be added in two ways:
 - **Containers**: Docker, Docker Compose
 - **CI/CD**: GitHub Actions
 - **App code**: Python, FastAPI, HTML/CSS/JavaScript
+
+## Infrastructure layout
+
+The infrastructure is managed with Terraform and split into two parts:
+
+- `stateful/` for permanent resources  
+  - S3 buckets
+  - DynamoDB
+  - ECR
+
+- `stateless/` for ephemeral resources  
+  - ALB
+  - Auto Scaling Group
+  - EC2
+  - IAM
+  - networking resources
+
+The project also uses a separate S3 config bucket to store:
+- `docker-compose.yml`
+- `.env`
+
+This makes it possible to update app configuration without recreating EC2 instances.
+
+## Project structure
+
+```text
+├── .github/workflows/
+├── backend/          # FastAPI app
+├── frontend/         # Web UI
+├── lambda/           # AWS Lambda functions
+└── terraform/aws/
+    ├── stateful/     # S3 buckets, DynamoDB, ECR
+    └── stateless/    # ALB, ASG, EC2, IAM, network, etc. 
+
+
+## Next steps 
+
+1. Add second Lambda to generate watermarks
+
+2. Add a third Lambda for AI image tagging/recognition
+
+3. Use DynamoDB data in the frontend
+
+4. Add filtering buttons and improve gallery search

@@ -87,7 +87,7 @@ This makes it possible to update app configuration without recreating EC2 instan
 └── terraform/aws/
     ├── stateful/     # S3 buckets, DynamoDB, ECR
     └── stateless/    # ALB, ASG, EC2, IAM, network, etc. 
-
+```
 
 ## Next steps 
 
